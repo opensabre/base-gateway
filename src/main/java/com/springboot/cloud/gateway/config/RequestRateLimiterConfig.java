@@ -1,10 +1,15 @@
 package com.springboot.cloud.gateway.config;
 
+import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 /**
  * 自定义限流标志的key，多个维度可以从这里入手
@@ -21,7 +26,7 @@ public class RequestRateLimiterConfig {
     @Bean
     @Primary
     public KeyResolver remoteAddressKeyResolver() {
-        return exchange -> Mono.just(exchange.getRequest().getRemoteAddress().getHostName());
+        return exchange -> Mono.just(Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getHostName());
     }
 
     /**
@@ -41,6 +46,17 @@ public class RequestRateLimiterConfig {
      */
     @Bean
     public KeyResolver userKeyResolver() {
-        return exchange -> Mono.just(exchange.getRequest().getQueryParams().getFirst("username"));
+        return exchange -> Mono.just(Objects.requireNonNull(exchange.getRequest().getQueryParams().getFirst("username")));
+    }
+
+    /**
+     * sentinel限流
+     *
+     * @return GlobalFilter
+     */
+    @Bean
+    @Order(-1)
+    public GlobalFilter sentinelGatewayFilter() {
+        return new SentinelGatewayFilter();
     }
 }

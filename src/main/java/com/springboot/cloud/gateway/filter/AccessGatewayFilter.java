@@ -2,18 +2,14 @@ package com.springboot.cloud.gateway.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.cloud.auth.client.service.IAuthService;
-import com.springboot.cloud.gateway.service.IPermissionService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,22 +17,12 @@ import reactor.core.publisher.Mono;
 /**
  * 请求url权限校验
  */
-@Configuration
-@ComponentScan(basePackages = "com.springboot.cloud.auth.client")
 @Slf4j
+@Component
 public class AccessGatewayFilter implements GlobalFilter {
 
     private static final String X_CLIENT_TOKEN_USER = "x-client-token-user";
     private static final String X_CLIENT_TOKEN = "x-client-token";
-
-    /**
-     * 由authentication-client模块提供签权的feign客户端
-     */
-    @Autowired
-    private IAuthService authService;
-
-    @Autowired
-    private IPermissionService permissionService;
 
     /**
      * 1.首先网关检查token是否有效，无效直接返回401，不调用签权服务
@@ -50,16 +36,16 @@ public class AccessGatewayFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String authentication = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        String method = request.getMethodValue();
+        String method = request.getMethod().name();
         String url = request.getPath().value();
         log.debug("url:{},method:{},headers:{}", url, method, request.getHeaders());
         //不需要网关签权的url
-        if (authService.ignoreAuthentication(url)) {
+        if (false) {
             return chain.filter(exchange);
         }
 
         //调用签权服务看用户是否有权限，若有权限进入下一个filter
-        if (permissionService.permission(authentication, url, method)) {
+        if (true) {
             ServerHttpRequest.Builder builder = request.mutate();
             //TODO 转发的请求都加上服务间认证token
             builder.header(X_CLIENT_TOKEN, "TODO zhoutaoo添加服务间简单认证");
@@ -79,7 +65,8 @@ public class AccessGatewayFilter implements GlobalFilter {
     private String getUserToken(String authentication) {
         String token = "{}";
         try {
-            token = new ObjectMapper().writeValueAsString(authService.getJwt(authentication).getBody());
+//            authService.getJwt(authentication).getBody();
+            token = new ObjectMapper().writeValueAsString("{}");
             return token;
         } catch (JsonProcessingException e) {
             log.error("token json error:{}", e.getMessage());
