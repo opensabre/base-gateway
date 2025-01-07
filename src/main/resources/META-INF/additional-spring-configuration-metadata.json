@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "opensabre.gateway.permit.paths",
+      "type": "java.lang.String",
+      "description": "Description for opensabre.gateway.permit.paths."
+  }
+] }

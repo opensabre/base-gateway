@@ -1,4 +1,4 @@
-package com.springboot.cloud.gateway;
+package io.github.opensabre.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

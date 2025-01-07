@@ -1,4 +1,4 @@
-package com.springboot.cloud.gateway.config;
+package io.github.opensabre.gateway.config;
 
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.support.ConfigurationService;

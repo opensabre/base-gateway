@@ -1,11 +1,4 @@
 spring:
-  profiles:
-    include: routes
-  rabbitmq:
-    host: ${RABBIT_MQ_HOST:localhost}
-    port: ${RABBIT_MQ_PORT:5672}
-    username: ${RABBIT_MQ_USERNAME:guest}
-    password: ${RABBIT_MQ_PASSWORD:guest}
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -15,14 +8,36 @@ spring:
         pool:
           max-active: 300
 
+knife4j:
+  gateway:
+    enabled: true
+    # 指定服务发现的模式聚合微服务文档，并且是默认`default`分组
+    strategy: discover
+    discover:
+      enabled: true
+      # 指定版本号(OpenAPI3)
+      version : openapi3
+      # 需要排除的微服务(eg:网关服务)
+      excluded-services:
+        - base-gateway
+
 management:
   endpoints:
     web:
       exposure:
         include: '*'
+  tracing:
+    sampling:
+      probability: 1.0
+    enabled: true
+    propagation:
+      type: w3c
 
 logging:
   level:
-    com.springboot.cloud: debug
+    io.github.opensabre.gateway: debug
+    org.springframework.cloud.gateway.route: info
   file:
-    path: logs/
+    path: logs
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-},%X{parentId:-}]'

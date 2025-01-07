@@ -1,7 +1,7 @@
-package com.springboot.cloud.gateway.config;
+package io.github.opensabre.gateway.config;
 
-import com.springboot.cloud.gateway.exception.CustomErrorWebExceptionHandler;
-import com.springboot.cloud.gateway.exception.GateWayExceptionHandlerAdvice;
+import io.github.opensabre.gateway.exception.CustomErrorWebExceptionHandler;
+import io.github.opensabre.gateway.exception.GateWayExceptionHandlerAdvice;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

@@ -1,4 +1,4 @@
-package com.springboot.cloud.gateway.filter;
+package io.github.opensabre.gateway.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,7 +77,7 @@ public class AccessGatewayFilter implements GlobalFilter {
     /**
      * 网关拒绝，返回401
      *
-     * @param
+     * @param serverWebExchange 请求
      */
     private Mono<Void> unauthorized(ServerWebExchange serverWebExchange) {
         serverWebExchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);

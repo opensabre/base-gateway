@@ -1,4 +1,4 @@
-package com.springboot.cloud.gateway.exception;
+package io.github.opensabre.gateway.exception;
 
 import io.github.opensabre.common.core.entity.vo.Result;
 import io.github.opensabre.common.core.exception.SystemErrorType;
@@ -28,16 +28,9 @@ public class GateWayExceptionHandlerAdvice {
         return Result.fail(SystemErrorType.GATEWAY_CONNECT_TIME_OUT);
     }
 
-    @ExceptionHandler(value = {NoResourceFoundException.class})
+    @ExceptionHandler(value = {NoResourceFoundException.class, NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Result<?> handle(NoResourceFoundException ex) {
-        log.error("not found exception:{}", ex.getMessage());
-        return Result.fail(SystemErrorType.GATEWAY_NOT_FOUND_SERVICE);
-    }
-
-    @ExceptionHandler(value = {NotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Result<?> handle(NotFoundException ex) {
         log.error("not found exception:{}", ex.getMessage());
         return Result.fail(SystemErrorType.GATEWAY_NOT_FOUND_SERVICE);
     }

@@ -1,4 +1,4 @@
-package com.springboot.cloud.gateway.exception;
+package io.github.opensabre.gateway.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;

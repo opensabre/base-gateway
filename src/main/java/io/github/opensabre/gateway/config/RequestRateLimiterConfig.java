@@ -1,4 +1,4 @@
-package com.springboot.cloud.gateway.config;
+package io.github.opensabre.gateway.config;
 
 import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
