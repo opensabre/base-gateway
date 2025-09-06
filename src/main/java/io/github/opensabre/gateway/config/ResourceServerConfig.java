@@ -43,8 +43,9 @@ public class ResourceServerConfig {
 
         // 开启全局验证
         http.authorizeExchange((authorize) -> authorize
+                // 不需要认证的资源或服务
                 .pathMatchers(opensabreGatewayConfig.getPermitPaths()).permitAll()
-                //全部需要认证
+                // 其它全部需要认证
                 .anyExchange().authenticated()
         );
 
@@ -53,19 +54,15 @@ public class ResourceServerConfig {
 
         // 设置当前服务为资源服务，解析请求头中的token
         http.oauth2ResourceServer((resourceServer) -> resourceServer
-                        // 使用jwt
-                        .jwt(jwt -> jwt
-                                // 请求中携带token访问时会触发该解析器适配器
-                                .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
-                        )
-                /*
+                        // 使用jwt ,请求中携带token访问时会触发该解析器适配器
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor()))
                 // xhr请求未携带Token处理
-                .authenticationEntryPoint(this::authenticationEntryPoint)
+                // .authenticationEntryPoint(this::authenticationEntryPoint)
                 // 权限不足处理
-                .accessDeniedHandler(this::accessDeniedHandler)
+                // .accessDeniedHandler(this::accessDeniedHandler)
                 // Token解析失败处理
-                .authenticationFailureHandler(this::failureHandler)
-                */
+                // .authenticationFailureHandler(this::failureHandler)
+
         );
         return http.build();
     }

@@ -15,6 +15,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <opensabre.version>0.1.1</opensabre.version>
+        <spring-boot-maven-plugin.version>3.4.1</spring-boot-maven-plugin.version>
         <knife4j-gateway-spring-boot-starter.version>4.5.0</knife4j-gateway-spring-boot-starter.version>
     </properties>
 
@@ -112,6 +113,20 @@
 
     <build>
         <plugins>
+            <!--springboot官方构建插件，可构建docker image-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!--docker镜像build插件-->
             <plugin>
                 <groupId>com.spotify</groupId>

@@ -1,5 +1,5 @@
 # 使用 openjdk:23-slim 作为基础镜像
-FROM openjdk:23-alpine
+FROM openjdk:23-slim
 
 # 添加参数 JAR_FILE，用于指定要添加到镜像中的 JAR 文件名称
 ARG JAR_FILE
