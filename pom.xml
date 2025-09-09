@@ -17,6 +17,7 @@
         <opensabre.version>0.1.1</opensabre.version>
         <spring-boot-maven-plugin.version>3.4.1</spring-boot-maven-plugin.version>
         <knife4j-gateway-spring-boot-starter.version>4.5.0</knife4j-gateway-spring-boot-starter.version>
+        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -127,23 +128,30 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--docker镜像build插件-->
+            <!-- Jib Maven插件 -->
             <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>1.2.0</version>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
                 <configuration>
-                    <!-- 注意imageName一定要是符合正则[a-z0-9-_.]的，否则构建不会成功 -->
-                    <imageName>opensabre/${project.artifactId}</imageName>
-                    <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
-                    <rm>true</rm>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
+                    <!-- 基础镜像 -->
+                    <from>
+                        <image>docker.1ms.run/eclipse-temurin:21-jre-alpine</image>
+                    </from>
+                    <!-- 目标镜像 -->
+                    <to>
+                        <image>opensabre/${project.artifactId}:${project.version}</image>
+                    </to>
+                    <!-- 容器配置 -->
+                    <container>
+                        <mainClass>io.github.opensabre.gateway.GatewayApplication</mainClass>
+                        <ports>
+                            <port>8443</port>
+                        </ports>
+                        <jvmFlag>-XX:+UseContainerSupport</jvmFlag>
+                        <user>1000</user>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
                 </configuration>
             </plugin>
         </plugins>

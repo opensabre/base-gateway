@@ -56,7 +56,10 @@ spring:
             authorization-grant-type: authorization_code
             # 回调地址，这里设置为Spring Security Client默认实现使用code换取token的接口，当前服务(gateway网关)的地址
             redirect-uri: http://www.opensabre.cloud:8443/login/oauth2/code/test_client1-client
-            scope: read,openid,profile
+            scope:
+              - read
+              - openid
+              - profile
 
 #网关白名单，无需要签权path
 opensabre:
