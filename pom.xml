@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>base-gateway</name>
-    <description>Gateway Api project for Opensabre</description>
+    <description>Gateway Project for Opensabre</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -133,23 +133,57 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>${jib-maven-plugin.version}</version>
+                <dependencies>
+                    <!-- 添加所有权扩展 -->
+                    <dependency>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-ownership-extension-maven</artifactId>
+                        <version>0.1.0</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
+                    <pluginExtensions>
+                        <pluginExtension>
+                            <implementation>com.google.cloud.tools.jib.maven.extension.ownership.JibOwnershipExtension</implementation>
+                            <configuration implementation="com.google.cloud.tools.jib.maven.extension.ownership.Configuration">
+                                <rules>
+                                    <rule>
+                                        <glob>/app/logs/**</glob>
+                                        <ownership>1001</ownership>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </pluginExtension>
+                    </pluginExtensions>
                     <!-- 基础镜像 -->
                     <from>
-                        <image>docker.1ms.run/eclipse-temurin:21-jre-alpine</image>
+                        <image>eclipse-temurin:21-jre-alpine</image>
                     </from>
                     <!-- 目标镜像 -->
                     <to>
-                        <image>opensabre/${project.artifactId}:${project.version}</image>
+                        <image>${REGISTRY_URL}/${project.artifactId}:${project.version}</image>
+                        <auth>
+                            <username>${secret.id}</username>
+                            <password>${secret.key}</password>
+                        </auth>
+                        <tags>
+                            <tag>latest</tag>
+                            <tag>${project.version}</tag>
+                        </tags>
                     </to>
                     <!-- 容器配置 -->
                     <container>
-                        <mainClass>io.github.opensabre.gateway.GatewayApplication</mainClass>
-                        <ports>
-                            <port>8443</port>
-                        </ports>
-                        <jvmFlag>-XX:+UseContainerSupport</jvmFlag>
-                        <user>1000</user>
+                        <user>1001</user>
+                        <workingDirectory>/app</workingDirectory>
+                        <volumes>
+                            <volume>/app/logs</volume>
+                        </volumes>
+                        <!-- 设置环境变量 -->
+                        <environment>
+                            <!-- 设置时区 -->
+                            <TZ>Asia/Shanghai</TZ>
+                        </environment>
+                        <jvmFlags>-XX:+UseContainerSupport</jvmFlags>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
                 </configuration>
