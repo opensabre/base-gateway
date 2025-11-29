@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authorization.AuthorizationContext;
 import reactor.core.publisher.Mono;
 
 /**
@@ -28,6 +30,9 @@ public class ResourceServerConfig {
 
     @Resource
     private OpensabreGatewayConfig opensabreGatewayConfig;
+
+    @Resource
+    private ReactiveAuthorizationManager<AuthorizationContext> authorizationManager;
 
     /**
      * 配置认证相关的过滤器链
@@ -45,8 +50,8 @@ public class ResourceServerConfig {
         http.authorizeExchange((authorize) -> authorize
                 // 不需要认证的资源或服务
                 .pathMatchers(opensabreGatewayConfig.getPermitPaths()).permitAll()
-                // 其它全部需要认证
-                .anyExchange().authenticated()
+                // url权限校验
+                .anyExchange().access(authorizationManager)
         );
 
         // 开启OAuth2登录
@@ -57,11 +62,11 @@ public class ResourceServerConfig {
                         // 使用jwt ,请求中携带token访问时会触发该解析器适配器
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor()))
                 // xhr请求未携带Token处理
-                // .authenticationEntryPoint(this::authenticationEntryPoint)
+//                 .authenticationEntryPoint(this::authenticationEntryPoint)
                 // 权限不足处理
-                // .accessDeniedHandler(this::accessDeniedHandler)
+//                 .accessDeniedHandler(this::accessDeniedHandler)
                 // Token解析失败处理
-                // .authenticationFailureHandler(this::failureHandler)
+//                 .authenticationFailureHandler(this::failureHandler)
 
         );
         return http.build();

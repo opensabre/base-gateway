@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 客户端配置
+ * 客户端配置，提取token中权限信息(roles)
  *
  * @author zhoutaoo
  */
@@ -31,7 +31,7 @@ public class ClientServerConfig {
 
             authorities.forEach(authority -> {
                 if (authority instanceof OAuth2UserAuthority oAuth2UserAuthority) {
-                    // 从认证服务获取的用户信息中提取权限信息
+                    // 从认证服务token中的用户信息中提取权限信息
                     Object userAuthorities = oAuth2UserAuthority.getAttributes().get("roles");
                     if (userAuthorities instanceof Collection<?> collection) {
                         // 转为SimpleGrantedAuthority的实例并插入mappedAuthorities中
