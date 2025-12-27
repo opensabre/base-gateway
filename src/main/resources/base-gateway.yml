@@ -64,5 +64,9 @@ spring:
 #网关白名单，无需要签权path
 opensabre:
   gateway:
+    #网关白名单，无需要签权path
     permit:
       paths: /v3/**,/webjars/**,/assets/**,/doc.html,/favicon.ico
+    # 是否开启 url 权限校验，默认不开启
+    permission:
+      enabled: false

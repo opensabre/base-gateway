@@ -4,5 +4,12 @@
       "name": "opensabre.gateway.permit.paths",
       "type": "java.lang.String",
       "description": "Description for opensabre.gateway.permit.paths."
-  }
-] }
+    },
+    {
+      "name": "opensabre.gateway.permission.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue":  "False",
+      "description": "opensabre.gateway.permission.enabled, default is false, not check url permission."
+    }
+  ]
+}
