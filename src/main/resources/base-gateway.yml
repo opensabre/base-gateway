@@ -41,32 +41,32 @@ spring:
             user-info-uri: ${spring.security.oauth2.client.provider.custom-issuer.issuer-uri}/userinfo
             user-name-attribute: name
         registration:
-          test_client1-client:
+          base-gateway-client:
             # oauth认证提供者配置，和上边配置的认证提供者关联起来
             provider: custom-issuer
             # 客户端名称，自定义
             client-name: 用户登陆
             # 客户端id，从认证服务申请的客户端id
-            client-id: test_client1
+            client-id: base-gateway
             # 客户端秘钥
             client-secret: test_client1
-            # 客户端认证方式
+            # 客户端id提交方式basic
             client-authentication-method: client_secret_basic
             # 获取Token使用的授权流程
             authorization-grant-type: authorization_code
             # 回调地址，这里设置为Spring Security Client默认实现使用code换取token的接口，当前服务(gateway网关)的地址
-            redirect-uri: http://localhost:8443/login/oauth2/code/test_client1-client
+            redirect-uri: http://www.opensabre.cloud:443/login/oauth2/code/base-gateway-client
             scope:
               - read
               - openid
               - profile
 
-#网关白名单，无需要签权path
+# 网关白名单，无需要签权path
 opensabre:
   gateway:
-    #网关白名单，无需要签权path
+    # 网关白名单，无需要签权path
     permit:
-      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/favicon.ico
+      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/favicon.ico,/oauth2/**
     # 是否开启 url 权限校验，默认不开启
     permission:
       enabled: false
