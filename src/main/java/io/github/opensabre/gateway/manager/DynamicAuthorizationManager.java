@@ -46,9 +46,8 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext context) {
         ServerWebExchange exchange = context.getExchange();
-        // 如果权限开关关闭，则直接放行
         // 如果是预检请求（OPTIONS），直接放行
-        if (!permission || exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
+        if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
             return Mono.just(AUTHORIZATION_DECISION_TRUE);
         }
         // 用户角色拥有的authorities 与 用户请求url所需authorities 进行匹配，任意包含则返回true(有权限)
@@ -69,6 +68,10 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
      * @return Mono<AuthorizationDecision> 是否匹配
      */
     private Mono<AuthorizationDecision> hasPermission(Authentication authToken, ServerWebExchange exchange) {
+        // 如果权限开关关闭，则表示不进行url权限校验，则直接放行
+        if (!permission) {
+            return Mono.just(AUTHORIZATION_DECISION_TRUE);
+        }
         // 用户拥有的角色集合，从token中获取角色列表
         Set<String> roles = AuthorityUtils.authorityListToSet(authToken.getAuthorities());
         // 根据请求和用户角色拥有权限 获取匹配的 Authority列表
