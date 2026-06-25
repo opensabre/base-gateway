@@ -14,7 +14,9 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <opensabre.version>0.1.1</opensabre.version>
+        <opensabre.version>0.3.0</opensabre.version>
+        <lombok.version>1.18.42</lombok.version>
+        <swagger-core.version>2.2.25</swagger-core.version>
         <spring-boot-maven-plugin.version>3.4.1</spring-boot-maven-plugin.version>
         <knife4j-gateway-spring-boot-starter.version>4.5.0</knife4j-gateway-spring-boot-starter.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
@@ -38,6 +40,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
+        <!--WebFlux基础组件-->
+        <dependency>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-webflux</artifactId>
+        </dependency>
         <!--开启Spring Cloud 应用程序启动时加载bootstrap配置文件-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -57,6 +64,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
+        <!--共享WebFlux Session，用于网关多节点部署-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
         </dependency>
         <!--缓存-->
         <dependency>
@@ -78,16 +90,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
-        <!--系统指标-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <!-- 链路追踪 -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-tracing-bridge-otel</artifactId>
-        </dependency>
         <!--授权认证-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -104,24 +106,41 @@
             <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
             <version>${knife4j-gateway-spring-boot-starter.version}</version>
         </dependency>
+        <!--Knife4j/OpenAPI模型类，避免引入WebMVC UI时缺少io.swagger.v3.oas.models.OpenAPI-->
         <dependency>
-            <groupId>io.github.opensabre</groupId>
-            <artifactId>opensabre-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-webmvc</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-models-jakarta</artifactId>
+            <version>${swagger-core.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-test</artifactId>
         </dependency>
+        <!--测试基础依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!--显式启用Lombok注解处理，兼容新版JDK默认不扫描classpath processor的行为-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <!--springboot官方构建插件，可构建docker image-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
