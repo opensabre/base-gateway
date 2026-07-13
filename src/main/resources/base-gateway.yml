@@ -23,6 +23,12 @@ spring:
             rate-limiter: "#{@defaultRedisRateLimiter}"  #SPEL表达式去的对应的bean
             key-resolver: "#{@apiKeyResolver}" #SPEL表达式去的对应的bean
       routes:
+        - id: base-authorization-api-docs
+          uri: lb://base-authorization
+          predicates:
+            - Path=/oauth2/v3/**
+          filters:
+            - StripPrefix=2
         - id: base-authorization-api
           uri: lb://base-authorization
           predicates:
