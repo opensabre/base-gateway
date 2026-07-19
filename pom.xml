@@ -95,6 +95,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
+        <!-- 解密控制面发布到 Nacos 的 OAuth2 Client 密钥。 -->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+        </dependency>
         <!--资源服务器-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
