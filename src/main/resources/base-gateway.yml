@@ -80,7 +80,7 @@ spring:
             client-secret: ${GATEWAY_LOCAL_OAUTH_CLIENT_SECRET:base-gateway-local}
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
-            redirect-uri: ${GATEWAY_LOCAL_REDIRECT_URI:http://localhost:3000/login/oauth2/code/base-gateway-client}
+            redirect-uri: ${GATEWAY_LOCAL_REDIRECT_URI:http://localhost:3000/login/oauth2/code/base-gateway-local}
             scope:
               - read
               - openid
