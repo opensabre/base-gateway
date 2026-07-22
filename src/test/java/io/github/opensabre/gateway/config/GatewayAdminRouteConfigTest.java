@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GatewayAdminRouteConfigTest {
 
     /**
-     * 外部前缀必须转发到服务发现中的 base-gateway-admin，并移除一层前缀。
+     * 前端统一使用 /api 前缀，网关必须移除 /api/gateway-admin 两层路径。
      */
     @Test
     void shouldRouteGatewayAdminPrefixToControlPlane() {
@@ -28,8 +28,8 @@ class GatewayAdminRouteConfigTest {
         assertThat(properties.getProperty("spring.cloud.gateway.routes[0].uri"))
                 .isEqualTo("lb://base-gateway-admin");
         assertThat(properties.getProperty("spring.cloud.gateway.routes[0].predicates[0]"))
-                .isEqualTo("Path=/gateway-admin/**");
+                .isEqualTo("Path=/api/gateway-admin/**");
         assertThat(properties.getProperty("spring.cloud.gateway.routes[0].filters[0]"))
-                .isEqualTo("StripPrefix=1");
+                .isEqualTo("StripPrefix=2");
     }
 }

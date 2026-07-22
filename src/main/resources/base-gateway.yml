@@ -23,13 +23,13 @@ spring:
             rate-limiter: "#{@defaultRedisRateLimiter}"  #SPEL表达式去的对应的bean
             key-resolver: "#{@apiKeyResolver}" #SPEL表达式去的对应的bean
       routes:
-        # 独立网关控制面；外部稳定前缀 /gateway-admin，转发时移除服务前缀。
+        # 独立网关控制面；外部稳定前缀 /api/gateway-admin，转发时移除两层服务前缀。
         - id: base-gateway-admin-api
           uri: lb://base-gateway-admin
           predicates:
-            - Path=/gateway-admin/**
+            - Path=/api/gateway-admin/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
         - id: base-authorization-api-docs
           uri: lb://base-authorization
           predicates:
