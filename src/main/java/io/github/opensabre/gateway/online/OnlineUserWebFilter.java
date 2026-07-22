@@ -23,7 +23,6 @@ public class OnlineUserWebFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        Mono<Void> next = chain.filter(exchange);
         return exchange.getPrincipal()
                 .ofType(Authentication.class)
                 .filter(OnlineUserRecordService::shouldRecord)
@@ -32,8 +31,7 @@ public class OnlineUserWebFilter implements WebFilter {
                         .onErrorResume(ex -> {
                             log.warn("record online user failed", ex);
                             return Mono.empty();
-                        })
-                        .then(next))
-                .switchIfEmpty(next);
+                        }))
+                .then(Mono.defer(() -> chain.filter(exchange)));
     }
 }
