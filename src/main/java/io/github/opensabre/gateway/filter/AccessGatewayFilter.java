@@ -1,17 +1,12 @@
 package io.github.opensabre.gateway.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -21,12 +16,11 @@ import reactor.core.publisher.Mono;
 @Component
 public class AccessGatewayFilter implements GlobalFilter {
 
-    private static final String X_CLIENT_TOKEN_USER = "x-client-token-user";
-    private static final String X_CLIENT_TOKEN = "x-client-token";
-
     /**
-     * 1.首先网关检查token是否有效，无效直接返回401，不调用签权服务
-     * 2.调用签权服务器看是否对该请求有权限，有权限进入下一个filter，没有权限返回401
+     * OAuth2 resource server and the dynamic authorization manager have already authenticated and
+     * authorized the request before it is forwarded. The gateway deliberately does not issue an
+     * internal token: the first Servlet application verifies the external JWT and issues the first
+     * signed {@code x-client-token} when it calls another service.
      *
      * @param exchange
      * @param chain
@@ -38,51 +32,7 @@ public class AccessGatewayFilter implements GlobalFilter {
         String authentication = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         String method = request.getMethod().name();
         String url = request.getPath().value();
-        log.debug("url:{},method:{},headers:{}", url, method, request.getHeaders());
-        //不需要网关签权的url
-        if (false) {
-            return chain.filter(exchange);
-        }
-
-        //调用签权服务看用户是否有权限，若有权限进入下一个filter
-        if (true) {
-            ServerHttpRequest.Builder builder = request.mutate();
-            //TODO 转发的请求都加上服务间认证token
-            builder.header(X_CLIENT_TOKEN, "TODO zhoutaoo添加服务间简单认证");
-            //将jwt token中的用户信息传给服务
-            builder.header(X_CLIENT_TOKEN_USER, getUserToken(authentication));
-            return chain.filter(exchange.mutate().request(builder.build()).build());
-        }
-        return unauthorized(exchange);
-    }
-
-    /**
-     * 提取jwt token中的数据，转为json
-     *
-     * @param authentication
-     * @return
-     */
-    private String getUserToken(String authentication) {
-        String token = "{}";
-        try {
-//            authService.getJwt(authentication).getBody();
-            token = new ObjectMapper().writeValueAsString("{}");
-            return token;
-        } catch (JsonProcessingException e) {
-            log.error("token json error:{}", e.getMessage());
-        }
-        return token;
-    }
-
-    /**
-     * 网关拒绝，返回401
-     *
-     * @param serverWebExchange 请求
-     */
-    private Mono<Void> unauthorized(ServerWebExchange serverWebExchange) {
-        serverWebExchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        DataBuffer buffer = serverWebExchange.getResponse()
-                .bufferFactory().wrap(HttpStatus.UNAUTHORIZED.getReasonPhrase().getBytes());
-        return serverWebExchange.getResponse().writeWith(Flux.just(buffer));
+        log.debug("url:{},method:{},hasAuthorization:{}", url, method, authentication != null);
+        return chain.filter(exchange);
     }
 }
