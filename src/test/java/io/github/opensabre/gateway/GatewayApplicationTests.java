@@ -2,6 +2,8 @@ package io.github.opensabre.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 
 @SpringBootTest(properties = {
         "spring.cloud.nacos.discovery.enabled=false",
@@ -14,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
         "spring.security.oauth2.client.provider.custom-issuer.jwk-set-uri=http://localhost/oauth2/jwks"
 })
 public class GatewayApplicationTests {
+
+    @MockBean
+    private ReactiveClientRegistrationRepository clientRegistrationRepository;
 
     @Test
     public void contextLoads() {
