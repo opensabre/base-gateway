@@ -40,25 +40,24 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
+        <!-- API 级熔断由 Spring Cloud Gateway 官方 reactive Resilience4j 适配器承载。 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+        </dependency>
         <!--WebFlux基础组件-->
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-webflux</artifactId>
         </dependency>
-        <!--开启Spring Cloud 应用程序启动时加载bootstrap配置文件-->
+        <!--统一使用 OpenSabre 注册中心和配置中心 starter。-->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-register</artifactId>
         </dependency>
-        <!--注册中心-->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!--配置中心-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-config</artifactId>
         </dependency>
         <!--redis限流-->
         <dependency>
