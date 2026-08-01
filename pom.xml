@@ -40,17 +40,21 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
+        <!-- API 级熔断由 Spring Cloud Gateway 官方 reactive Resilience4j 适配器承载。 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+        </dependency>
         <!--WebFlux基础组件-->
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-webflux</artifactId>
         </dependency>
-        <!--注册中心-->
+        <!--统一使用 OpenSabre 注册中心和配置中心 starter。-->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-register</artifactId>
         </dependency>
-        <!-- OpenSabre 统一配置中心 Starter。 -->
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-config</artifactId>
@@ -154,6 +158,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <JM.LOG.PATH>${project.build.directory}/logs</JM.LOG.PATH>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
             <!-- Jib Maven插件 -->
             <plugin>

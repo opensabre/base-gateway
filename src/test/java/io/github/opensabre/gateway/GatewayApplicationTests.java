@@ -2,8 +2,13 @@ package io.github.opensabre.gateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerResilience4JFilterFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {
         "spring.cloud.nacos.discovery.enabled=false",
@@ -17,11 +22,15 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 })
 public class GatewayApplicationTests {
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @MockBean
     private ReactiveClientRegistrationRepository clientRegistrationRepository;
 
     @Test
     public void contextLoads() {
-
+        assertThat(applicationContext.getBeansOfType(SpringCloudCircuitBreakerResilience4JFilterFactory.class))
+                .isNotEmpty();
     }
 }

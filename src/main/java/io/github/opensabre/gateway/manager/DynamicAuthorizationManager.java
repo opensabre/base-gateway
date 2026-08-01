@@ -18,6 +18,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
+import java.util.Optional;
+import io.github.opensabre.gateway.config.GatewayApiAccessProperties;
 
 /**
  * 请求 url 动态鉴权
@@ -36,6 +38,12 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
     @Value("${opensabre.gateway.permission.enabled:false}")
     private boolean permission;
 
+    private final GatewayApiAccessPolicy apiAccessPolicy;
+
+    public DynamicAuthorizationManager(GatewayApiAccessPolicy apiAccessPolicy) {
+        this.apiAccessPolicy = apiAccessPolicy;
+    }
+
     /**
      * url 级权限校验
      *
@@ -50,13 +58,34 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
         if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
             return Mono.just(AUTHORIZATION_DECISION_TRUE);
         }
+        Optional<GatewayApiAccessProperties.AccessMode> apiMode;
+        try {
+            apiMode = apiAccessPolicy.resolve(exchange);
+        } catch (RuntimeException exception) {
+            // 动态规则损坏时失败关闭，不能退回更宽松的旧逻辑。
+            return Mono.just(AUTHORIZATION_DECISION_FALSE);
+        }
+        if (apiMode.orElse(null) == GatewayApiAccessProperties.AccessMode.PUBLIC) {
+            return Mono.just(AUTHORIZATION_DECISION_TRUE);
+        }
+        if (apiMode.orElse(null) == GatewayApiAccessProperties.AccessMode.AUTHENTICATED) {
+            return authenticated(authentication);
+        }
+        boolean forceResourcePermission = apiMode.orElse(null)
+                == GatewayApiAccessProperties.AccessMode.RESOURCE_REQUIRED;
         // 用户角色拥有的authorities 与 用户请求url所需authorities 进行匹配，任意包含则返回true(有权限)
         return authentication
                 // 认证通过的
                 .filter(Authentication::isAuthenticated)
                 // 用户token中的角色 所拥有的 authorities 和请求进行匹配
-                .flatMap(authToken -> hasPermission(authToken, exchange))
+                .flatMap(authToken -> hasPermission(authToken, exchange, forceResourcePermission))
                 // 如果为空则返回 false 无权限
+                .defaultIfEmpty(AUTHORIZATION_DECISION_FALSE);
+    }
+
+    private Mono<AuthorizationDecision> authenticated(Mono<Authentication> authentication) {
+        return authentication.filter(Authentication::isAuthenticated)
+                .map(ignored -> AUTHORIZATION_DECISION_TRUE)
                 .defaultIfEmpty(AUTHORIZATION_DECISION_FALSE);
     }
 
@@ -67,9 +96,10 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
      * @param exchange  请求信息
      * @return Mono<AuthorizationDecision> 是否匹配
      */
-    private Mono<AuthorizationDecision> hasPermission(Authentication authToken, ServerWebExchange exchange) {
+    private Mono<AuthorizationDecision> hasPermission(Authentication authToken, ServerWebExchange exchange,
+            boolean forceResourcePermission) {
         // 如果权限开关关闭，则表示不进行url权限校验，则直接放行
-        if (!permission) {
+        if (!permission && !forceResourcePermission) {
             return Mono.just(AUTHORIZATION_DECISION_TRUE);
         }
         // 用户拥有的角色集合，从token中获取角色列表
