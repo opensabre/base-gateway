@@ -44,6 +44,7 @@ class OnlineUserWebFilterTest {
     @Test
     void invokesFilterChainOnlyOnceWithoutPrincipal() {
         when(exchange.getPrincipal()).thenReturn(Mono.empty());
+        when(exchange.getSession()).thenReturn(Mono.empty());
         when(chain.filter(exchange)).thenReturn(Mono.empty());
 
         filter.filter(exchange, chain).block();
