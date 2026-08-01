@@ -45,20 +45,15 @@
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-webflux</artifactId>
         </dependency>
-        <!--开启Spring Cloud 应用程序启动时加载bootstrap配置文件-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
         <!--注册中心-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-        <!--配置中心-->
+        <!-- OpenSabre 统一配置中心 Starter。 -->
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+            <groupId>io.github.opensabre</groupId>
+            <artifactId>opensabre-starter-config</artifactId>
         </dependency>
         <!--redis限流-->
         <dependency>
