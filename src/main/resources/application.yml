@@ -1,4 +1,9 @@
 spring:
+  # Gateway routes and API access policies are managed in Nacos by base-gateway-admin.
+  # Keep the import optional so the application can still start with the checked-in
+  # baseline when Nacos is unavailable, while subscribing to changes in production.
+  config:
+    import: optional:nacos:base-gateway.yml?group=DEFAULT_GROUP&refreshEnabled=true
   session:
     store-type: redis
     redis:
