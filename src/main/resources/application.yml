@@ -3,7 +3,20 @@ spring:
   # Keep the import optional so the application can still start with the checked-in
   # baseline when Nacos is unavailable, while subscribing to changes in production.
   config:
-    import: optional:nacos:base-gateway.yml?group=DEFAULT_GROUP&refreshEnabled=true
+    import:
+      - optional:nacos:opensabre-common.yml?group=DEFAULT_GROUP&refreshEnabled=true
+      - optional:nacos:base-gateway.yml?group=DEFAULT_GROUP&refreshEnabled=true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${REGISTER_HOST:localhost}:${REGISTER_PORT:8848}
+      config:
+        server-addr: ${REGISTER_HOST:localhost}:${REGISTER_PORT:8848}
+        file-extension: yml
+        # spring-alibaba-nacos-config 2023.x passes this map directly to the
+        # Nacos client; the deployed server is mounted below /nacos.
+        config:
+          contextPath: /nacos
   session:
     store-type: redis
     redis:
