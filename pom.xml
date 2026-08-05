@@ -225,7 +225,7 @@
                             <!-- 设置时区 -->
                             <TZ>Asia/Shanghai</TZ>
                         </environment>
-                        <jvmFlags>-XX:+UseContainerSupport</jvmFlags>
+                        <jvmFlags>-XX:+UseContainerSupport -Dnacos.logging.default.config.enabled=false</jvmFlags>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
                 </configuration>
