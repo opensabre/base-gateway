@@ -58,6 +58,15 @@
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-config</artifactId>
+            <exclusions>
+                <!-- Use Spring Boot Config Data below; the legacy bootstrap
+                     manager is created before Nacos client context options
+                     can be bound. -->
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-bootstrap</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--redis限流-->
         <dependency>
@@ -225,7 +234,10 @@
                             <!-- 设置时区 -->
                             <TZ>Asia/Shanghai</TZ>
                         </environment>
-                        <jvmFlags>-XX:+UseContainerSupport -Dnacos.logging.default.config.enabled=false</jvmFlags>
+                        <jvmFlags>
+                            <jvmFlag>-XX:+UseContainerSupport</jvmFlag>
+                            <jvmFlag>-Dnacos.logging.default.config.enabled=false</jvmFlag>
+                        </jvmFlags>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
                 </configuration>
