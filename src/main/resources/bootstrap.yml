@@ -9,6 +9,7 @@ spring:
         server-addr: ${REGISTER_HOST:opensabre}:${REGISTER_PORT:8848}
       config:
         server-addr: ${REGISTER_HOST:opensabre}:${REGISTER_PORT:8848}
+        context-path: /nacos
         file-extension: yml
     sentinel:
       transport:
