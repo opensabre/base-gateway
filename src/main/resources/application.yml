@@ -63,3 +63,9 @@ logging:
     path: logs
   pattern:
     level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-},%X{parentId:-}]'
+
+opensabre:
+  gateway:
+    client-ip:
+      # Only these direct peers may supply X-Forwarded-For. Configure the deployment network explicitly.
+      trusted-proxies: ${GATEWAY_TRUSTED_PROXIES:127.0.0.1/32,::1/128}

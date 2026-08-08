@@ -1,5 +1,6 @@
 package io.github.opensabre.gateway.online;
 
+import io.github.opensabre.gateway.filter.ClientIpResolver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +11,6 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import reactor.core.publisher.Mono;
 
-import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -21,11 +21,14 @@ public class OnlineUserRecordService {
 
     private final ReactiveStringRedisTemplate redisTemplate;
     private final String sessionNamespace;
+    private final ClientIpResolver clientIpResolver;
 
     public OnlineUserRecordService(ReactiveStringRedisTemplate redisTemplate,
-                                   @Value("${spring.session.redis.namespace:opensabre:gateway:session}") String sessionNamespace) {
+                                   @Value("${spring.session.redis.namespace:opensabre:gateway:session}") String sessionNamespace,
+                                   ClientIpResolver clientIpResolver) {
         this.redisTemplate = redisTemplate;
         this.sessionNamespace = sessionNamespace;
+        this.clientIpResolver = clientIpResolver;
     }
 
     public Mono<Void> record(ServerWebExchange exchange, WebSession session, Authentication authentication) {
@@ -57,26 +60,14 @@ public class OnlineUserRecordService {
                 && !"anonymousUser".equals(authentication.getName());
     }
 
-    static String clientIp(ServerWebExchange exchange) {
-        String forwardedFor = exchange.getRequest().getHeaders().getFirst("X-Forwarded-For");
-        if (StringUtils.hasText(forwardedFor)) {
-            return forwardedFor.split(",", 2)[0].trim();
-        }
-        InetSocketAddress remoteAddress = exchange.getRequest().getRemoteAddress();
-        if (remoteAddress == null) {
-            return null;
-        }
-        return remoteAddress.getAddress() == null ? remoteAddress.getHostString() : remoteAddress.getAddress().getHostAddress();
-    }
-
-    private static Map<String, String> recordValues(ServerWebExchange exchange, String sessionId,
+    private Map<String, String> recordValues(ServerWebExchange exchange, String sessionId,
                                                     Authentication authentication, String loginTime, String now) {
         HttpHeaders headers = exchange.getRequest().getHeaders();
         Map<String, String> values = new LinkedHashMap<>();
         values.put("sessionId", sessionId);
         values.put("username", authentication.getName());
         values.put("displayName", authentication.getName());
-        putIfPresent(values, "ip", clientIp(exchange));
+        putIfPresent(values, "ip", clientIpResolver.resolve(exchange));
         putIfPresent(values, "userAgent", headers.getFirst(HttpHeaders.USER_AGENT));
         values.put("authenticationType", authentication.getClass().getSimpleName());
         values.put("loginTime", loginTime);
