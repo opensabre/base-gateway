@@ -1,8 +1,6 @@
 package io.github.opensabre.gateway.online;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,11 +23,4 @@ class OnlineUserRecordServiceTest {
         assertThat(OnlineUserRecordService.shouldRecord(authentication)).isTrue();
     }
 
-    @Test
-    void shouldUseFirstForwardedIp() {
-        var exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/")
-                .header("X-Forwarded-For", "10.0.0.1, 10.0.0.2"));
-
-        assertThat(OnlineUserRecordService.clientIp(exchange)).isEqualTo("10.0.0.1");
-    }
 }

@@ -1,6 +1,11 @@
 {
   "properties": [
     {
+      "name": "opensabre.gateway.client-ip.trusted-proxies",
+      "type": "java.util.List<java.lang.String>",
+      "description": "CIDRs of direct proxies trusted to supply X-Forwarded-For."
+    },
+    {
       "name": "opensabre.gateway.permit.paths",
       "type": "java.lang.String",
       "description": "Description for opensabre.gateway.permit.paths."
