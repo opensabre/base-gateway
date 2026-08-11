@@ -54,6 +54,16 @@
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-starter-register</artifactId>
+            <exclusions>
+                <!-- The gateway loads Nacos configuration through
+                     spring.config.import. Keeping the legacy Bootstrap starter
+                     would load base-gateway.yml twice and let the stale
+                     Bootstrap property source shadow hot-refreshed values. -->
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-bootstrap</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.github.opensabre</groupId>

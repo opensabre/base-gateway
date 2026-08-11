@@ -1,4 +1,8 @@
+server:
+  port: ${SERVER_PORT:8443}
 spring:
+  application:
+    name: base-gateway
   # Gateway routes and API access policies are managed in Nacos by base-gateway-admin.
   # Keep the import optional so the application can still start with the checked-in
   # baseline when Nacos is unavailable, while subscribing to changes in production.
@@ -10,6 +14,7 @@ spring:
     nacos:
       discovery:
         server-addr: ${REGISTER_HOST:localhost}:${REGISTER_PORT:8848}
+        ip: ${NACOS_DISCOVERY_IP:}
       config:
         server-addr: ${REGISTER_HOST:localhost}:${REGISTER_PORT:8848}
         file-extension: yml
