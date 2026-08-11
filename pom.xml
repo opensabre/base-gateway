@@ -228,7 +228,6 @@
                         </auth>
                         <tags>
                             <tag>latest</tag>
-                            <tag>${project.version}</tag>
                         </tags>
                     </to>
                     <!-- 容器配置 -->
