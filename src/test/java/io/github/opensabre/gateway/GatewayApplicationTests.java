@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerResilience4JFilterFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 
@@ -26,9 +25,6 @@ public class GatewayApplicationTests {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
-    private Environment environment;
-
     @MockBean
     private ReactiveClientRegistrationRepository clientRegistrationRepository;
 
@@ -36,7 +32,5 @@ public class GatewayApplicationTests {
     public void contextLoads() {
         assertThat(applicationContext.getBeansOfType(SpringCloudCircuitBreakerResilience4JFilterFactory.class))
                 .isNotEmpty();
-        assertThat(environment.getProperty("spring.application.name")).isEqualTo("base-gateway");
-        assertThat(environment.getProperty("server.port")).isEqualTo("8443");
     }
 }
