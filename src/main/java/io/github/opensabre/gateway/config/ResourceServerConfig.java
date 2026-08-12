@@ -49,7 +49,8 @@ public class ResourceServerConfig {
         // 开启全局验证
         http.authorizeExchange((authorize) -> authorize
                 // 仅返回不透明发布修订号，供控制面逐实例确认配置已刷新。
-                .pathMatchers("/internal/gateway/revision", "/internal/gateway/routes/probe").permitAll()
+                .pathMatchers("/internal/gateway/revision", "/internal/gateway/routes/probe",
+                        "/actuator/gatewayruntime").permitAll()
                 // 不需要认证的资源或服务
                 .pathMatchers(opensabreGatewayConfig.getPermitPaths()).permitAll()
                 // url权限校验
