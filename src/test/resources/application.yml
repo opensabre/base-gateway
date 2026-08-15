@@ -1,6 +1,18 @@
 server:
   port: 8443
 
+spring:
+  application:
+    name: base-gateway
+  cloud:
+    nacos:
+      config:
+        enabled: false
+        import-check:
+          enabled: false
+      discovery:
+        enabled: false
+
 logging:
   level:
     org.springframework.web: info

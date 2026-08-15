@@ -1,10 +1,12 @@
 package io.github.opensabre.gateway.config;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.bulkhead.BulkheadRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigurationProperties;
+import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4jBulkheadProvider;
 import org.springframework.cloud.gateway.config.GatewayResilience4JCircuitBreakerAutoConfiguration;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerResilience4JFilterFactory;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,11 @@ class Resilience4JGatewayConfigurationTest {
         @Bean
         TimeLimiterRegistry timeLimiterRegistry() {
             return TimeLimiterRegistry.ofDefaults();
+        }
+
+        @Bean
+        ReactiveResilience4jBulkheadProvider reactiveResilience4jBulkheadProvider() {
+            return new ReactiveResilience4jBulkheadProvider(BulkheadRegistry.ofDefaults());
         }
 
         @Bean

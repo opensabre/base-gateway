@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
@@ -62,7 +62,7 @@ class DynamicAuthorizationManagerTest {
     private boolean check(Mono<Authentication> auth, String method, String path) {
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.method(org.springframework.http.HttpMethod.valueOf(method), path));
-        AuthorizationDecision decision = manager.check(auth, new AuthorizationContext(exchange)).block();
+        AuthorizationResult decision = manager.authorize(auth, new AuthorizationContext(exchange)).block();
         return decision != null && decision.isGranted();
     }
 

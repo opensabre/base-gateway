@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.factory.SpringCloudCircuitBreakerResilience4JFilterFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.cloud.nacos.discovery.enabled=false",
         "spring.cloud.nacos.config.enabled=false",
         "spring.cloud.discovery.enabled=false",
-        "spring.cloud.gateway.discovery.locator.enabled=false",
+        "spring.cloud.gateway.server.webflux.discovery.locator.enabled=false",
         "spring.security.oauth2.client.provider.custom-issuer.issuer-uri=",
         "spring.security.oauth2.client.provider.custom-issuer.authorization-uri=http://localhost/oauth2/authorize",
         "spring.security.oauth2.client.provider.custom-issuer.token-uri=http://localhost/oauth2/token",
@@ -25,7 +25,7 @@ public class GatewayApplicationTests {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @MockBean
+    @MockitoBean
     private ReactiveClientRegistrationRepository clientRegistrationRepository;
 
     @Test
