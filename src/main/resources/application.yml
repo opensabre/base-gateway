@@ -18,10 +18,6 @@ spring:
       config:
         server-addr: ${REGISTER_HOST:localhost}:${REGISTER_PORT:8848}
         file-extension: yml
-        # spring-alibaba-nacos-config 2023.x passes this map directly to the
-        # Nacos client; the deployed server is mounted below /nacos.
-        config:
-          contextPath: /nacos
   session:
     store-type: redis
     redis:
@@ -34,19 +30,6 @@ spring:
       lettuce:
         pool:
           max-active: 300
-
-knife4j:
-  gateway:
-    enabled: true
-    # 指定服务发现的模式聚合微服务文档，并且是默认`default`分组
-    strategy: discover
-    discover:
-      enabled: true
-      # 指定版本号(OpenAPI3)
-      version : openapi3
-      # 需要排除的微服务(eg:网关服务)
-      excluded-services:
-        - base-gateway
 
 management:
   endpoints:

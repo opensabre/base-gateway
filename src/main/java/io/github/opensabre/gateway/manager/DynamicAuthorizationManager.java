@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
@@ -28,9 +29,9 @@ import io.github.opensabre.gateway.config.GatewayApiAccessProperties;
 public class DynamicAuthorizationManager implements ReactiveAuthorizationManager<AuthorizationContext> {
 
     // 无权限
-    public static final AuthorizationDecision AUTHORIZATION_DECISION_FALSE = new AuthorizationDecision(false);
+    public static final AuthorizationResult AUTHORIZATION_DECISION_FALSE = new AuthorizationDecision(false);
     // 有权限
-    public static final AuthorizationDecision AUTHORIZATION_DECISION_TRUE = new AuthorizationDecision(true);
+    public static final AuthorizationResult AUTHORIZATION_DECISION_TRUE = new AuthorizationDecision(true);
 
     @Resource
     private IAuthorityService authorityService;
@@ -52,7 +53,7 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
      * @return Mono<AuthorizationDecision> 是否有权限
      */
     @Override
-    public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext context) {
+    public Mono<AuthorizationResult> authorize(Mono<Authentication> authentication, AuthorizationContext context) {
         ServerWebExchange exchange = context.getExchange();
         // 如果是预检请求（OPTIONS），直接放行
         if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
@@ -83,7 +84,7 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
                 .defaultIfEmpty(AUTHORIZATION_DECISION_FALSE);
     }
 
-    private Mono<AuthorizationDecision> authenticated(Mono<Authentication> authentication) {
+    private Mono<AuthorizationResult> authenticated(Mono<Authentication> authentication) {
         return authentication.filter(Authentication::isAuthenticated)
                 .map(ignored -> AUTHORIZATION_DECISION_TRUE)
                 .defaultIfEmpty(AUTHORIZATION_DECISION_FALSE);
@@ -96,7 +97,7 @@ public class DynamicAuthorizationManager implements ReactiveAuthorizationManager
      * @param exchange  请求信息
      * @return Mono<AuthorizationDecision> 是否匹配
      */
-    private Mono<AuthorizationDecision> hasPermission(Authentication authToken, ServerWebExchange exchange,
+    private Mono<AuthorizationResult> hasPermission(Authentication authToken, ServerWebExchange exchange,
             boolean forceResourcePermission) {
         // 如果权限开关关闭，则表示不进行url权限校验，则直接放行
         if (!permission && !forceResourcePermission) {

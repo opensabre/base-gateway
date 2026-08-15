@@ -23,13 +23,16 @@ class GatewayAdminRouteConfigTest {
         Properties properties = factory.getObject();
 
         assertThat(properties).isNotNull();
-        assertThat(properties.getProperty("spring.cloud.gateway.routes[0].id"))
+        String prefix = "spring.cloud.gateway.server.webflux.routes[0]";
+        assertThat(properties.getProperty(prefix + ".id"))
                 .isEqualTo("base-gateway-admin-api");
-        assertThat(properties.getProperty("spring.cloud.gateway.routes[0].uri"))
+        assertThat(properties.getProperty(prefix + ".uri"))
                 .isEqualTo("lb://base-gateway-admin");
-        assertThat(properties.getProperty("spring.cloud.gateway.routes[0].predicates[0]"))
+        assertThat(properties.getProperty(prefix + ".predicates[0]"))
                 .isEqualTo("Path=/api/gateway-admin/**");
-        assertThat(properties.getProperty("spring.cloud.gateway.routes[0].filters[0]"))
+        assertThat(properties.getProperty(prefix + ".filters[0]"))
                 .isEqualTo("StripPrefix=2");
+        assertThat(properties.stringPropertyNames())
+                .noneMatch(name -> name.startsWith("spring.cloud.gateway.routes["));
     }
 }

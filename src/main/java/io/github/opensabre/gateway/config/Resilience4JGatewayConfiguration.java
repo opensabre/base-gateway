@@ -4,6 +4,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
+import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4jBulkheadProvider;
 import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +23,9 @@ public class Resilience4JGatewayConfiguration {
     public ReactiveResilience4JCircuitBreakerFactory reactiveResilience4JCircuitBreakerFactory(
             CircuitBreakerRegistry circuitBreakerRegistry,
             TimeLimiterRegistry timeLimiterRegistry,
+            ReactiveResilience4jBulkheadProvider bulkheadProvider,
             Resilience4JConfigurationProperties properties) {
         return new ReactiveResilience4JCircuitBreakerFactory(
-                circuitBreakerRegistry, timeLimiterRegistry, properties);
+                circuitBreakerRegistry, timeLimiterRegistry, bulkheadProvider, properties);
     }
 }

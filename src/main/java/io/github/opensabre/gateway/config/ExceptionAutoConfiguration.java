@@ -8,12 +8,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorWebExceptionHandler;
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.webflux.autoconfigure.error.DefaultErrorWebExceptionHandler;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.reactive.error.ErrorAttributes;
-import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.webflux.error.ErrorAttributes;
+import org.springframework.boot.webflux.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +34,14 @@ import java.util.List;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ExceptionAutoConfiguration {
 
+    @Bean
+    @ConfigurationProperties("server.error")
+    public static ErrorProperties errorProperties() {
+        return new ErrorProperties();
+    }
+
     private final ServerProperties serverProperties;
+    private final ErrorProperties errorProperties;
 
     private final ApplicationContext applicationContext;
 
@@ -46,11 +55,13 @@ public class ExceptionAutoConfiguration {
     private GateWayExceptionHandlerAdvice gateWayExceptionHandlerAdvice;
 
     public ExceptionAutoConfiguration(ServerProperties serverProperties,
+                                      ErrorProperties errorProperties,
                                       WebProperties webProperties,
                                       ObjectProvider<List<ViewResolver>> viewResolversProvider,
                                       ServerCodecConfigurer serverCodecConfigurer,
                                       ApplicationContext applicationContext) {
         this.serverProperties = serverProperties;
+        this.errorProperties = errorProperties;
         this.applicationContext = applicationContext;
         this.resourceProperties = webProperties.getResources();
         this.viewResolvers = viewResolversProvider.getIfAvailable(Collections::emptyList);
@@ -64,7 +75,7 @@ public class ExceptionAutoConfiguration {
         DefaultErrorWebExceptionHandler exceptionHandler = new CustomErrorWebExceptionHandler(
                 errorAttributes,
                 this.resourceProperties,
-                this.serverProperties.getError(),
+                this.errorProperties,
                 this.applicationContext,
                 this.gateWayExceptionHandlerAdvice);
         exceptionHandler.setViewResolvers(this.viewResolvers);
@@ -73,5 +84,3 @@ public class ExceptionAutoConfiguration {
         return exceptionHandler;
     }
 }
-
-
