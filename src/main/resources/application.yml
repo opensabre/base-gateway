@@ -8,7 +8,7 @@ spring:
   # baseline when Nacos is unavailable, while subscribing to changes in production.
   config:
     import:
-      - optional:nacos:opensabre-common.yml?group=DEFAULT_GROUP&refreshEnabled=true
+      - optional:nacos:${OPENSABRE_COMMON_CONFIG_DATA_ID:opensabre-common.yml}?group=${OPENSABRE_COMMON_CONFIG_GROUP:DEFAULT_GROUP}&refreshEnabled=true
       - optional:nacos:base-gateway.yml?group=DEFAULT_GROUP&refreshEnabled=true
   cloud:
     nacos:

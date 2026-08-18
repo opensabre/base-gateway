@@ -5,7 +5,7 @@
 
     <groupId>io.github.opensabre</groupId>
     <artifactId>base-gateway</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <name>base-gateway</name>
@@ -13,10 +13,11 @@
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
-        <opensabre.version>1.0.0</opensabre.version>
+        <opensabre.version>1.1.0</opensabre.version>
         <lombok.version>1.18.42</lombok.version>
-        <spring-boot-maven-plugin.version>4.0.7</spring-boot-maven-plugin.version>
+        <spring-boot-maven-plugin.version>4.1.0</spring-boot-maven-plugin.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+        <native-build-tools-plugin.version>0.10.6</native-build-tools-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -235,4 +236,46 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <properties>
+                <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native-build-tools-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <imageName>${project.artifactId}</imageName>
+                            <mainClass>io.github.opensabre.gateway.GatewayApplication</mainClass>
+                            <buildArgs>
+                                <buildArg>--no-fallback</buildArg>
+                            </buildArgs>
+                            <skipNativeTests>true</skipNativeTests>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
