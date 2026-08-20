@@ -91,15 +91,7 @@
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
         </dependency>
-        <!--限流-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
-        </dependency>
+        <!-- Sentinel 暂停：待 Native/Java 25 兼容性专项验证后再按需恢复。 -->
         <!--负载均衡-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
