@@ -5,7 +5,7 @@
 
     <groupId>io.github.opensabre</groupId>
     <artifactId>base-gateway</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>base-gateway</name>
@@ -13,7 +13,7 @@
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
-        <opensabre.version>1.0.0</opensabre.version>
+        <opensabre.version>1.1.1</opensabre.version>
         <lombok.version>1.18.42</lombok.version>
         <spring-boot-maven-plugin.version>4.0.7</spring-boot-maven-plugin.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
@@ -194,7 +194,7 @@
                     </pluginExtensions>
                     <!-- 基础镜像 -->
                     <from>
-                        <image>eclipse-temurin:21-jre-alpine</image>
+                        <image>eclipse-temurin:25-jre-alpine</image>
                     </from>
                     <!-- 目标镜像 -->
                     <to>
@@ -219,6 +219,12 @@
                         </environment>
                         <jvmFlags>
                             <jvmFlag>-XX:+UseContainerSupport</jvmFlag>
+                            <jvmFlag>-XX:InitialRAMPercentage=10</jvmFlag>
+                            <jvmFlag>-XX:MaxRAMPercentage=60</jvmFlag>
+                            <jvmFlag>-Xss256k</jvmFlag>
+                            <jvmFlag>-XX:MaxMetaspaceSize=128m</jvmFlag>
+                            <jvmFlag>-XX:MaxDirectMemorySize=128m</jvmFlag>
+                            <jvmFlag>-XX:+ExitOnOutOfMemoryError</jvmFlag>
                             <jvmFlag>-Dnacos.logging.default.config.enabled=false</jvmFlag>
                         </jvmFlags>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
