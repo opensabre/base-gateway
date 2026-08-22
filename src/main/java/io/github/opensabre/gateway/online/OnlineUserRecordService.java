@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -65,7 +66,9 @@ public class OnlineUserRecordService {
         HttpHeaders headers = exchange.getRequest().getHeaders();
         Map<String, String> values = new LinkedHashMap<>();
         values.put("sessionId", sessionId);
-        values.put("username", authentication.getName());
+        // OAuth2/OIDC sessions may expose the display name through Authentication#getName.
+        // Persist the stable login identifier separately for the online-user username column.
+        values.put("username", resolveUsername(authentication));
         values.put("displayName", authentication.getName());
         putIfPresent(values, "ip", clientIpResolver.resolve(exchange));
         putIfPresent(values, "userAgent", headers.getFirst(HttpHeaders.USER_AGENT));
@@ -79,5 +82,26 @@ public class OnlineUserRecordService {
         if (StringUtils.hasText(value)) {
             values.put(key, value);
         }
+    }
+
+    static String resolveUsername(Authentication authentication) {
+        if (authentication.getPrincipal() instanceof OAuth2AuthenticatedPrincipal principal) {
+            String username = firstText(principal.getAttribute("sub"),
+                    principal.getAttribute("preferred_username"),
+                    principal.getAttribute("user_name"));
+            if (StringUtils.hasText(username)) {
+                return username;
+            }
+        }
+        return authentication.getName();
+    }
+
+    private static String firstText(Object... values) {
+        for (Object value : values) {
+            if (value != null && StringUtils.hasText(value.toString())) {
+                return value.toString();
+            }
+        }
+        return null;
     }
 }
