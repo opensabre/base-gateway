@@ -32,6 +32,10 @@ spring:
                 - Path=/api/gateway-admin/**
               filters:
                 - StripPrefix=2
+            - id: iqc-platform-api
+              uri: lb://iqc-platform
+              predicates:
+                - Path=/api/iqc/**
             - id: base-authorization-api-docs
               uri: lb://base-authorization
               predicates:
@@ -94,13 +98,25 @@ spring:
               - read
               - openid
               - profile
+          iqc-platform-local:
+            provider: custom-issuer
+            client-name: IQC 本地前端
+            client-id: ${IQC_GATEWAY_LOCAL_OAUTH_CLIENT_ID:iqc-platform-local}
+            client-secret: ${IQC_GATEWAY_LOCAL_OAUTH_CLIENT_SECRET:base-gateway-local}
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: ${IQC_GATEWAY_LOCAL_REDIRECT_URI:http://localhost:3010/login/oauth2/code/iqc-platform-local}
+            scope:
+              - read
+              - openid
+              - profile
 
 # 网关白名单，无需要签权path
 opensabre:
   gateway:
     # 网关白名单，无需要签权path
     permit:
-      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/favicon.ico,/oauth2/**
+      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/favicon.ico,/oauth2/**,/api/auth/logout
     # 是否开启 url 权限校验，默认不开启
     permission:
       enabled: false
