@@ -9,6 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,6 +29,17 @@ public class GateWayExceptionHandlerAdvice {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Result<?> handle(ClientAuthorizationRequiredException ex) {
         log.warn("OAuth2 client authorization required: registrationId={}", ex.getClientRegistrationId());
+        return Result.fail(SystemErrorType.INVALID_TOKEN);
+    }
+
+    /**
+     * TokenRelay raises this exception when an expired access token cannot be refreshed. The
+     * browser must start a new login instead of treating the stale session as a server failure.
+     */
+    @ExceptionHandler(OAuth2AuthorizationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Result<?> handle(OAuth2AuthorizationException ex) {
+        log.warn("OAuth2 client authorization failed: errorCode={}", ex.getError().getErrorCode());
         return Result.fail(SystemErrorType.INVALID_TOKEN);
     }
 
