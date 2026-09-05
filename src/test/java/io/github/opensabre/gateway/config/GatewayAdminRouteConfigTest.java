@@ -37,7 +37,7 @@ class GatewayAdminRouteConfigTest {
         assertThat(properties.getProperty(authorization + ".id"))
                 .isEqualTo("base-authorization");
         assertThat(properties.getProperty(authorization + ".predicates[0]"))
-                .isEqualTo("Path=/oauth2/**,/login,/logout,/assets/**,/webjars/**,/v3/**");
+                .isEqualTo("Path=/oauth2/**,/login,/logout,/assets/**");
         String authorizationApi = "spring.cloud.gateway.server.webflux.routes[3]";
         assertThat(properties.getProperty(authorizationApi + ".id"))
                 .isEqualTo("base-authorization-api");

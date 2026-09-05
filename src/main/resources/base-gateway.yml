@@ -39,7 +39,8 @@ spring:
             - id: base-authorization
               uri: lb://base-authorization
               predicates:
-                - Path=/oauth2/**,/login,/logout,/assets/**,/webjars/**,/v3/**
+                # Knife4j owns /webjars/**; forwarding it to authorization turns static assets into JSON 404s.
+                - Path=/oauth2/**,/login,/logout,/assets/**
             - id: base-authorization-api
               uri: lb://base-authorization
               predicates:
