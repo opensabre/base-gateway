@@ -36,12 +36,10 @@ spring:
               uri: lb://iqc-platform
               predicates:
                 - Path=/api/iqc/**
-            - id: base-authorization-api-docs
+            - id: base-authorization
               uri: lb://base-authorization
               predicates:
-                - Path=/oauth2/v3/**
-              filters:
-                - StripPrefix=2
+                - Path=/oauth2/**,/login,/logout,/assets/**,/webjars/**,/v3/**
             - id: base-authorization-api
               uri: lb://base-authorization
               predicates:
@@ -116,7 +114,7 @@ opensabre:
   gateway:
     # 网关白名单，无需要签权path
     permit:
-      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/favicon.ico,/oauth2/**
+      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/swagger-ui/**,/api/auth/v3/api-docs/**,/api/org/v3/api-docs/**,/api/sysadmin/v3/api-docs/**,/favicon.ico,/oauth2/**
     # 是否开启 url 权限校验，默认不开启
     permission:
       enabled: false

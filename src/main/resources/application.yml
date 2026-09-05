@@ -35,6 +35,17 @@ spring:
         pool:
           max-active: 300
 
+# Knife4j reads this Springdoc configuration to switch between downstream APIs.
+springdoc:
+  swagger-ui:
+    urls:
+      - name: 授权服务
+        url: /api/auth/v3/api-docs
+      - name: 组织服务
+        url: /api/org/v3/api-docs
+      - name: 系统管理服务
+        url: /api/sysadmin/v3/api-docs
+
 management:
   server:
     port: ${MANAGEMENT_SERVER_PORT:18080}
