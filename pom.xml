@@ -112,6 +112,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
+        <!-- Springdoc provides Boot 4 compatible OpenAPI aggregation metadata. -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <!-- Knife4j UI consumes Springdoc's swagger-config endpoint. -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-ui</artifactId>
+            <version>4.5.0</version>
+        </dependency>
         <dependency>
             <groupId>io.github.opensabre</groupId>
             <artifactId>opensabre-test</artifactId>
