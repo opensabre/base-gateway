@@ -22,7 +22,7 @@ public class AuthorityMetaService implements IAuthorityMetaService {
         this.authorityMetaProvider = authorityMetaProvider;
     }
 
-    @Cacheable(value = "gateway:authorities:role", key ="#role")
+    @Cacheable(value = "gateway:authorities:role", key = "#p0")
     @Override
     public Flux<Authority> getAuthorityForRole(String role) {
         // 远程调用获取角色所拥有的权限资源
