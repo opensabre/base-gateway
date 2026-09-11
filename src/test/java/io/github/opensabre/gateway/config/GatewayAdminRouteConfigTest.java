@@ -33,12 +33,19 @@ class GatewayAdminRouteConfigTest {
                 .isEqualTo("Path=/api/gateway-admin/**");
         assertThat(properties.getProperty(prefix + ".filters[0]"))
                 .isEqualTo("StripPrefix=2");
-        String authorization = "spring.cloud.gateway.server.webflux.routes[2]";
+        String iqcDocs = "spring.cloud.gateway.server.webflux.routes[1]";
+        assertThat(properties.getProperty(iqcDocs + ".id"))
+                .isEqualTo("iqc-platform-docs");
+        assertThat(properties.getProperty(iqcDocs + ".predicates[0]"))
+                .isEqualTo("Path=/api/iqc/v3/api-docs/**");
+        assertThat(properties.getProperty(iqcDocs + ".filters[0]"))
+                .isEqualTo("StripPrefix=2");
+        String authorization = "spring.cloud.gateway.server.webflux.routes[3]";
         assertThat(properties.getProperty(authorization + ".id"))
                 .isEqualTo("base-authorization");
         assertThat(properties.getProperty(authorization + ".predicates[0]"))
                 .isEqualTo("Path=/oauth2/**,/login,/logout,/assets/**");
-        String authorizationApi = "spring.cloud.gateway.server.webflux.routes[3]";
+        String authorizationApi = "spring.cloud.gateway.server.webflux.routes[4]";
         assertThat(properties.getProperty(authorizationApi + ".id"))
                 .isEqualTo("base-authorization-api");
         assertThat(properties.getProperty(authorizationApi + ".predicates[0]"))
@@ -53,17 +60,13 @@ class GatewayAdminRouteConfigTest {
      * 聚合文档通过已有应用路由读取各服务的 OpenAPI 描述。
      */
     @Test
-    void shouldConfigureAggregatedOpenApiDocuments() {
+    void shouldNotHardCodeAggregatedOpenApiDocuments() {
         YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
         factory.setResources(new FileSystemResource("src/main/resources/application.yml"));
         Properties properties = factory.getObject();
 
         assertThat(properties).isNotNull();
-        assertThat(properties.getProperty("springdoc.swagger-ui.urls[0].url"))
-                .isEqualTo("/api/auth/v3/api-docs");
-        assertThat(properties.getProperty("springdoc.swagger-ui.urls[1].url"))
-                .isEqualTo("/api/org/v3/api-docs");
-        assertThat(properties.getProperty("springdoc.swagger-ui.urls[2].url"))
-                .isEqualTo("/api/sysadmin/v3/api-docs");
+        assertThat(properties.stringPropertyNames())
+                .noneMatch(name -> name.startsWith("springdoc.swagger-ui.urls["));
     }
 }

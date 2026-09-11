@@ -24,13 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.security.oauth2.client.provider.custom-issuer.issuer-uri=",
         "spring.security.oauth2.client.provider.custom-issuer.authorization-uri=http://localhost/oauth2/authorize",
         "spring.security.oauth2.client.provider.custom-issuer.token-uri=http://localhost/oauth2/token",
-        "spring.security.oauth2.client.provider.custom-issuer.jwk-set-uri=http://localhost/oauth2/jwks",
-        "springdoc.swagger-ui.urls[0].name=授权服务",
-        "springdoc.swagger-ui.urls[0].url=/api/auth/v3/api-docs",
-        "springdoc.swagger-ui.urls[1].name=组织服务",
-        "springdoc.swagger-ui.urls[1].url=/api/org/v3/api-docs",
-        "springdoc.swagger-ui.urls[2].name=系统管理服务",
-        "springdoc.swagger-ui.urls[2].url=/api/sysadmin/v3/api-docs"
+        "spring.security.oauth2.client.provider.custom-issuer.jwk-set-uri=http://localhost/oauth2/jwks"
 })
 class DocumentationAggregationTest {
 
@@ -59,8 +53,8 @@ class DocumentationAggregationTest {
             assertThat(config.statusCode()).isEqualTo(200);
             assertThat(config.body())
                     .contains("/api/auth/v3/api-docs")
-                    .contains("/api/org/v3/api-docs")
-                    .contains("/api/sysadmin/v3/api-docs");
+                    .contains("/api/gateway-admin/v3/api-docs")
+                    .contains("/api/iqc/v3/api-docs");
         }
     }
 }
