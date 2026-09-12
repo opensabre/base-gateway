@@ -33,6 +33,8 @@ class GatewayAdminRouteConfigTest {
                 .isEqualTo("Path=/api/gateway-admin/**");
         assertThat(properties.getProperty(prefix + ".filters[0]"))
                 .isEqualTo("StripPrefix=2");
+        assertThat(properties.getProperty(prefix + ".metadata.opensabre.openapi.path"))
+                .isEqualTo("/api/gateway-admin/v3/api-docs");
         String iqcDocs = "spring.cloud.gateway.server.webflux.routes[1]";
         assertThat(properties.getProperty(iqcDocs + ".id"))
                 .isEqualTo("iqc-platform-docs");
@@ -40,11 +42,17 @@ class GatewayAdminRouteConfigTest {
                 .isEqualTo("Path=/api/iqc/v3/api-docs/**");
         assertThat(properties.getProperty(iqcDocs + ".filters[0]"))
                 .isEqualTo("StripPrefix=2");
+        assertThat(properties.getProperty(iqcDocs + ".metadata.opensabre.openapi.path"))
+                .isEqualTo("/api/iqc/v3/api-docs");
+        assertThat(properties.getProperty("spring.cloud.gateway.server.webflux.routes[2]"
+                + ".metadata.opensabre.openapi.enabled")).isEqualTo("false");
         String authorization = "spring.cloud.gateway.server.webflux.routes[3]";
         assertThat(properties.getProperty(authorization + ".id"))
                 .isEqualTo("base-authorization");
         assertThat(properties.getProperty(authorization + ".predicates[0]"))
                 .isEqualTo("Path=/oauth2/**,/login,/logout,/assets/**");
+        assertThat(properties.getProperty(authorization + ".metadata.opensabre.openapi.enabled"))
+                .isEqualTo("false");
         String authorizationApi = "spring.cloud.gateway.server.webflux.routes[4]";
         assertThat(properties.getProperty(authorizationApi + ".id"))
                 .isEqualTo("base-authorization-api");
@@ -52,6 +60,8 @@ class GatewayAdminRouteConfigTest {
                 .isEqualTo("Path=/api/auth/**");
         assertThat(properties.getProperty(authorizationApi + ".filters[0]"))
                 .isEqualTo("StripPrefix=2");
+        assertThat(properties.getProperty(authorizationApi + ".metadata.opensabre.openapi.path"))
+                .isEqualTo("/api/auth/v3/api-docs");
         assertThat(properties.stringPropertyNames())
                 .noneMatch(name -> name.startsWith("spring.cloud.gateway.routes["));
     }
