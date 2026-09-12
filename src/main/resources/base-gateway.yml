@@ -28,21 +28,44 @@ spring:
             # 独立网关控制面；外部稳定前缀 /api/gateway-admin，转发时移除两层服务前缀。
             - id: base-gateway-admin-api
               uri: lb://base-gateway-admin
+              metadata:
+                opensabre.openapi.enabled: true
+                opensabre.openapi.path: /api/gateway-admin/v3/api-docs
+                opensabre.openapi.name: 网关控制面
               predicates:
                 - Path=/api/gateway-admin/**
               filters:
                 - StripPrefix=2
+            # IQC APIs keep their external prefix; OpenAPI itself is rooted at /v3 and must remove it.
+            - id: iqc-platform-docs
+              uri: lb://iqc-platform
+              metadata:
+                opensabre.openapi.enabled: true
+                opensabre.openapi.path: /api/iqc/v3/api-docs
+                opensabre.openapi.name: IQC 平台
+              predicates:
+                - Path=/api/iqc/v3/api-docs/**
+              filters:
+                - StripPrefix=2
             - id: iqc-platform-api
               uri: lb://iqc-platform
+              metadata:
+                opensabre.openapi.enabled: false
               predicates:
                 - Path=/api/iqc/**
             - id: base-authorization
               uri: lb://base-authorization
+              metadata:
+                opensabre.openapi.enabled: false
               predicates:
                 # Knife4j owns /webjars/**; forwarding it to authorization turns static assets into JSON 404s.
                 - Path=/oauth2/**,/login,/logout,/assets/**
             - id: base-authorization-api
               uri: lb://base-authorization
+              metadata:
+                opensabre.openapi.enabled: true
+                opensabre.openapi.path: /api/auth/v3/api-docs
+                opensabre.openapi.name: 授权服务
               predicates:
                 - Path=/api/auth/**
               filters:
@@ -115,7 +138,7 @@ opensabre:
   gateway:
     # 网关白名单，无需要签权path
     permit:
-      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/swagger-ui/**,/api/auth/v3/api-docs/**,/api/org/v3/api-docs/**,/api/sysadmin/v3/api-docs/**,/favicon.ico,/oauth2/**
+      paths: /v3/**,/webjars/**,/assets/**,/doc.html,/swagger-ui/**,/api/*/v3/api-docs/**,/favicon.ico,/oauth2/**
     # 是否开启 url 权限校验，默认不开启
     permission:
       enabled: false

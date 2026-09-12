@@ -1,5 +1,6 @@
 package io.github.opensabre.gateway.config;
 
+import io.github.opensabre.security.actuator.ActuatorMonitoringAccess;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,12 +52,8 @@ public class ResourceServerConfig {
                 // 仅返回不透明发布修订号，供控制面逐实例确认配置已刷新。
                 .pathMatchers("/internal/gateway/revision", "/internal/gateway/routes/probe",
                         "/actuator/gatewayruntime").permitAll()
-                // Only the basic metrics displayed by service management are readable without a user token.
-                .pathMatchers("/actuator/metrics/process.cpu.usage",
-                        "/actuator/metrics/jvm.memory.used",
-                        "/actuator/metrics/jvm.memory.max",
-                        "/actuator/metrics/process.uptime",
-                        "/actuator/metrics/jvm.threads.live").permitAll()
+                // The shared WebFlux filter validates the control plane's internal token first.
+                .pathMatchers(ActuatorMonitoringAccess.metricPathArray()).permitAll()
                 // 不需要认证的资源或服务
                 .pathMatchers(opensabreGatewayConfig.getPermitPaths()).permitAll()
                 // url权限校验
