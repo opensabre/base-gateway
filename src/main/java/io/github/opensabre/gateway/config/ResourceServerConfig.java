@@ -52,6 +52,9 @@ public class ResourceServerConfig {
                 // 仅返回不透明发布修订号，供控制面逐实例确认配置已刷新。
                 .pathMatchers("/internal/gateway/revision", "/internal/gateway/routes/probe",
                         "/actuator/gatewayruntime").permitAll()
+                // Management port is not published; Prometheus scrapes this endpoint on the
+                // private Docker network. Interactive Actuator metrics remain token protected.
+                .pathMatchers("/actuator/prometheus").permitAll()
                 // The shared WebFlux filter validates the control plane's internal token first.
                 .pathMatchers(ActuatorMonitoringAccess.metricPathArray()).permitAll()
                 // 不需要认证的资源或服务
