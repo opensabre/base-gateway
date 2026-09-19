@@ -8,6 +8,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -16,8 +18,12 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Stream;
 
 /**
  * 资源服务器配置
@@ -42,6 +48,23 @@ public class ResourceServerConfig {
      * @return 过滤器链
      */
     @Bean
+    @Order(0)
+    public SecurityWebFilterChain actuatorSecurityFilterChain(ServerHttpSecurity http) {
+        http.securityMatcher(ServerWebExchangeMatchers.pathMatchers("/actuator/**"));
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable);
+        http.authorizeExchange(authorize -> authorize
+                // This filter verifies the short-lived internal token on fixed metric paths.
+                .pathMatchers(ActuatorMonitoringAccess.metricPathArray()).permitAll()
+                .anyExchange().hasAuthority("SCOPE_actuator.read"));
+        http.exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(new HttpStatusServerEntryPoint(HttpStatus.UNAUTHORIZED)));
+        http.oauth2ResourceServer(resourceServer -> resourceServer
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
+        return http.build();
+    }
+
+    @Bean
+    @Order(1)
     public SecurityWebFilterChain defaultSecurityFilterChain(ServerHttpSecurity http) {
         // 禁用csrf与cors
         http.csrf(ServerHttpSecurity.CsrfSpec::disable);
@@ -50,13 +73,7 @@ public class ResourceServerConfig {
         // 开启全局验证
         http.authorizeExchange((authorize) -> authorize
                 // 仅返回不透明发布修订号，供控制面逐实例确认配置已刷新。
-                .pathMatchers("/internal/gateway/revision", "/internal/gateway/routes/probe",
-                        "/actuator/gatewayruntime").permitAll()
-                // Management port is not published; Prometheus scrapes this endpoint on the
-                // private Docker network. Interactive Actuator metrics remain token protected.
-                .pathMatchers("/actuator/prometheus").permitAll()
-                // The shared WebFlux filter validates the control plane's internal token first.
-                .pathMatchers(ActuatorMonitoringAccess.metricPathArray()).permitAll()
+                .pathMatchers("/internal/gateway/revision", "/internal/gateway/routes/probe").permitAll()
                 // 不需要认证的资源或服务
                 .pathMatchers(opensabreGatewayConfig.getPermitPaths()).permitAll()
                 // url权限校验
@@ -93,8 +110,14 @@ public class ResourceServerConfig {
         // 设置权限信息在jwt claims中的key
         grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
 
+        JwtGrantedAuthoritiesConverter scopeAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt ->
+                Stream.concat(grantedAuthoritiesConverter.convert(jwt).stream(),
+                        scopeAuthoritiesConverter.convert(jwt).stream())
+                        .distinct()
+                        .toList());
         return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
     }
 }
