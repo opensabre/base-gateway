@@ -5,6 +5,7 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,17 @@ class OnlineUserRecordServiceTest {
         authentication.setAuthenticated(true);
 
         assertThat(OnlineUserRecordService.shouldRecord(authentication)).isTrue();
+    }
+
+    @Test
+    void shouldSkipResourceServerMachineToken() {
+        var jwt = org.springframework.security.oauth2.jwt.Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .subject("opensabre-prometheus")
+                .build();
+        var authentication = new JwtAuthenticationToken(jwt);
+
+        assertThat(OnlineUserRecordService.shouldRecord(authentication)).isFalse();
     }
 
     @Test

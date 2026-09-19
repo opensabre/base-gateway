@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -57,6 +58,7 @@ public class OnlineUserRecordService {
     static boolean shouldRecord(Authentication authentication) {
         return authentication != null
                 && authentication.isAuthenticated()
+                && !(authentication instanceof JwtAuthenticationToken)
                 && StringUtils.hasText(authentication.getName())
                 && !"anonymousUser".equals(authentication.getName());
     }
